@@ -1,8 +1,8 @@
-# Crawl Data Repository (CDR) Reference Implementation
+# Crawl Data Repository (CDR) Implementation
 
 ## Introduction
 
-This is a proposal of a reference implementation for the CDR schema.
+This is a implementation for the Memex CDR schema.
 This implementation provides:
 - A class for representation of the CDR schema
 - Default metadata and content extractions using Apache Tika
@@ -20,14 +20,20 @@ This implementation provides:
 ### Creating a CDR document
 
 ```java
-String json = new CrawlDataBuilder()
-                    .withUrl("http://www.darpa.mil/program/memex")
-                    .withRawContent(content)
-                    .withContentType("text/html")
-                    .withCrawler("memex-crawler")
-                    .withTeam("DARPA")
-                    .withTimestamp(new Date().getTime())
-                    .buildAsJson();
+CDRDocumentBuilder builder = new CDRDocumentBuilder();
+
+builder.withUrl("http://www.darpa.mil/program/memex")
+       .withRawContent("<html><head><title>Sample title</title></head><body>Original text</body></html>")
+       .withContentType("text/html")
+       .withCrawler("memex-crawler")
+       .withTeam("DARPA")
+       .withTimestamp(new Date().getTime());
+
+// A object to acccess CDR document fields
+CDRDocument doc = builder.build();
+
+// A object already serialized in JSON format       
+String json = builder.buildAsJson();
 ```
 
 The output variable `json` will contain a JSON representation for valid CDR object, including metadata and textual content extracted.
@@ -37,31 +43,18 @@ Sample output in JSON format:
 ```json
 {
   "url": "http://www.darpa.mil/program/memex",
-  "timestamp": 1437838711410,
+  "timestamp": 1457053240762,
   "team": "DARPA",
   "crawler": "memex-crawler",
-  "raw_content": "<raw html here>",
+  "raw_content": "<html><head><title>Sample title</title></head><body>Original text</body></html>",
   "content_type": "text/html",
-  "content": "<plain text extracted from raw_content here>",
-  "metadata": {
-    "Content-Style-Type": "text/css",
-    "image": "/DDM_Gallery/(2ab4) i2o feature 3 - memex - 287x228_thumb.jpg",
+  "crawl_data": null,
+  "extracted_metadata": {
     "X-Parsed-By": "org.apache.tika.parser.DefaultParser",
-    "REVISIT-AFTER": "1 DAYS",
-    "title": "Memex (Domain-Specific Search)",
-    "ROBOTS": "INDEX, FOLLOW",
-    "X-UA-Compatible": "IE=edge",
-    "RATING": "GENERAL",
-    "viewport": "width=device-width, initial-scale=1",
-    "dc:title": "Memex (Domain-Specific Search)",
-    "Content-Encoding": "UTF-8",
-    "Content-Type-Hint": "text/html; charset=UTF-8",
-    "COPYRIGHT": "Copyright 2015 by DARPA",
-    "Content-Script-Type": "text/javascript",
-    "Topic": "Cyber",
-    "RESOURCE-TYPE": "DOCUMENT",
-    "Content-Type": "text/html; charset=UTF-8"
+    "dc:title": "Sample title",
+    "Content-Encoding": "ISO-8859-1",
+    "title": "Sample title",
+    "Content-Type": "text/html; charset=ISO-8859-1"
   },
-  "crawl_data": null
-}
-``` 
+  "extracted_text": "Original text"
+}```

@@ -1,8 +1,8 @@
-package memex;
+package memex.cdr;
 
-import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -11,20 +11,20 @@ import com.fasterxml.jackson.annotation.JsonProperty;
     'timestamp': <timestamp for data when scraped, in epoch milliseconds>,
     'team': <name of crawling team>,
     'crawler': <name of crawler; each type of crawler should have a distinct name or reference>,
-    'raw_content': <full data of raw crawled page; source page that can be reproduced for system purposes (e.g. provenance, law enforce evidence)>,
+    'raw_content': <full data of raw crawled page; source page that can be reproduced for system purposes (e.g. provenance, law enforcement evidence)>,
     'content_type': <mime-type of data in stored in raw_content>,
     'crawl_data': <source page from crawler that extracts full text but not full layout; full-text>,
-    'metadata': {
-      // The output JSON of Tika parsing metadata for a given document
+    'extracted_metadata': {
+      // Metadata extracted by Tika/other extractors
     },
-    ‘content’: {
-      // String output of Tika parsing text for a given document if applicable for that mime type
-     },
-    'objects': [<urls for binary objects in location that is easily accessible, e.g. S3>]
+    ‘extracted_text’: {
+      // Text extracted from the document if applicable for that mime type
+     }
 }
 */
-public class CrawlData {
+public class CDRDocument {
 
+    private String _id;
     private String url;
     private long timestamp;
     private String team;
@@ -32,11 +32,10 @@ public class CrawlData {
     private String rawContent;
     private String contentType;
     private Object crawlData;
-    private Map<String, String> metadata;
-    private String content;
-    private List<Object> objects;
+    private Map<String, String> extractedMetadata;
+    private String extractedText;
 
-    public CrawlData() {
+    public CDRDocument() {
     }
 
     public String getUrl() {
@@ -101,28 +100,34 @@ public class CrawlData {
         this.crawlData = crawlData;
     }
 
-    public List<Object> getObjects() {
-        return objects;
+    @JsonProperty("extracted_metadata")
+    public Map<String, String> getExtractedMetadata() {
+        return extractedMetadata;
     }
 
-    public void setObjects(List<Object> objects) {
-        this.objects = objects;
+    @JsonProperty("extracted_metadata")
+    public void setExtractedMetadata(Map<String, String> extractedMetadata) {
+        this.extractedMetadata = extractedMetadata;
     }
 
-    public Map<String, String> getMetadata() {
-        return metadata;
+    @JsonProperty("extracted_text")
+    public String getExtractedText() {
+        return extractedText;
     }
 
-    public void setMetadata(Map<String, String> metadata) {
-        this.metadata = metadata;
+    @JsonProperty("extracted_text")
+    public void setExtractedText(String extractedText) {
+        this.extractedText = extractedText;
     }
 
-    public String getContent() {
-        return content;
+    @JsonProperty("_id")
+    public void setId(String _id) {
+        this._id = _id;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    @JsonIgnore
+    @JsonProperty("_id")
+    public String getId() {
+        return this._id;
     }
-
 }

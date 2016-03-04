@@ -15,16 +15,18 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.ByteStreams;
 
-public class CrawlDataBuilderTest {
+import memex.cdr.CDRDocumentBuilder;
+
+public class CDRDocumentBuilderTest {
 
 	@Test
 	public void testSerializeToJson() throws Exception {
 		
 		String filename = "http%3A%2F%2Fwww.darpa.mil%2Fprogram%2Fmemex";
-		InputStream fileStream = CrawlDataBuilderTest.class.getResourceAsStream(filename);
+		InputStream fileStream = CDRDocumentBuilderTest.class.getResourceAsStream(filename);
 		String content = new String(ByteStreams.toByteArray(fileStream));
 		
-		String json = new CrawlDataBuilder()
+		String json = new CDRDocumentBuilder()
 			.withUrl("http://www.darpa.mil/program/memex")
 			.withRawContent(content)
 			.withContentType("text/html")
@@ -51,6 +53,10 @@ public class CrawlDataBuilderTest {
 		assertThat(node.get("team").asText(), is("DARPA"));
 		
 		assertThat(node.get("timestamp").asLong(), is(not(0L)));
+		
+		assertThat(node.get("extracted_text"), is(notNullValue()));
+		
+		assertThat(node.get("extracted_metadata"), is(notNullValue()));
 	}
 
 }

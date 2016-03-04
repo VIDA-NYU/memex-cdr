@@ -1,68 +1,64 @@
-package memex;
+package memex.cdr;
 
-import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class CrawlDataBuilder {
+public class CDRDocumentBuilder {
 
     private static final ObjectMapper jsonMapper = new ObjectMapper();
 
-    private CrawlData data = new CrawlData();
+    private CDRDocument data = new CDRDocument();
 
-    public CrawlDataBuilder withUrl(String url) {
+    public CDRDocumentBuilder withUrl(String url) {
         data.setUrl(url);
         return this;
     }
 
-    public CrawlDataBuilder withTimestamp(long timestamp) {
+    public CDRDocumentBuilder withTimestamp(long timestamp) {
         data.setTimestamp(timestamp);
         return this;
     }
 
-    public CrawlDataBuilder withTeam(String team) {
+    public CDRDocumentBuilder withTeam(String team) {
         data.setTeam(team);
         return this;
     }
 
-    public CrawlDataBuilder withCrawler(String crawler) {
+    public CDRDocumentBuilder withCrawler(String crawler) {
         data.setCrawler(crawler);
         return this;
     }
 
-    public CrawlDataBuilder withRawContent(String rawContent) {
+    public CDRDocumentBuilder withRawContent(String rawContent) {
         data.setRawContent(rawContent);
         return this;
     }
 
-    public CrawlDataBuilder withContentType(String contentType) {
+    public CDRDocumentBuilder withContentType(String contentType) {
         data.setContentType(contentType);
         return this;
     }
 
-    public CrawlDataBuilder withCrawlData(Object crawlData) {
+    public CDRDocumentBuilder withCrawlData(Object crawlData) {
         data.setCrawlData(crawlData);
         return this;
     }
 
-    public CrawlDataBuilder withMetadata(Map<String, String> metadata) {
-        data.setMetadata(metadata);
+    public CDRDocumentBuilder withMetadata(Map<String, String> metadata) {
+        data.setExtractedMetadata(metadata);
         return this;
     }
 
-    public CrawlDataBuilder withContent(String content) {
-        data.setContent(content);
+    public CDRDocumentBuilder withContent(String content) {
+        data.setExtractedText(content);
         return this;
     }
 
-    public CrawlDataBuilder withObjects(List<Object> objects) {
-        data.setObjects(objects);
-        return this;
-    }
-
-    public CrawlData build() {
+    public CDRDocument build() {
 
         if (data.getUrl() == null) {
             throw new IllegalArgumentException("Field 'url' is mandatory");
@@ -81,26 +77,29 @@ public class CrawlDataBuilder {
         }
 
         TikaExtractor extractor = null;
-        if (data.getMetadata() == null || data.getContent() == null) {
+        if (data.getExtractedMetadata() == null || data.getExtractedText() == null) {
             extractor = new TikaExtractor(data.getRawContent());
         }
-        if (data.getMetadata() == null && extractor != null) {
-            data.setMetadata(extractor.getMetadata());
+        if (data.getExtractedMetadata() == null && extractor != null) {
+            data.setExtractedMetadata(extractor.getMetadata());
         }
-        if (data.getContent() == null && extractor != null) {
-            data.setContent(extractor.getPlainText());
+        if (data.getExtractedText() == null && extractor != null) {
+            data.setExtractedText(extractor.getPlainText());
         }
+        
+        StringBuilder textForId = new StringBuilder();
+        textForId.append(data.getUrl());
+        textForId.append("-");
+        textForId.append(data.getTimestamp());
+        
+        String hashedId = DigestUtils.sha256Hex(textForId.toString()).toUpperCase();
+        data.setId(hashedId);
 
         return data;
     }
 
     public String buildAsJson() throws JsonProcessingException {
         return jsonMapper.writeValueAsString(this.build());
-    }
-
-    public static void main(String[] args) {
-        CrawlData data = new CrawlData();
-        data.setContent("Text extracted sin");
     }
 
 }

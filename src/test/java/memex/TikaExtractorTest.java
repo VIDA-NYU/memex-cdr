@@ -9,13 +9,15 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import memex.cdr.TikaExtractor;
+
 public class TikaExtractorTest {
 
 	@Test
 	public void testExtractMetadata() {
 		// given
 		String filename = "http%3A%2F%2Fwww.darpa.mil%2Fprogram%2Fmemex";
-		InputStream fileStream = CrawlDataBuilderTest.class.getResourceAsStream(filename);
+		InputStream fileStream = CDRDocumentBuilderTest.class.getResourceAsStream(filename);
 		
 		// when
 		TikaExtractor extractor = new TikaExtractor(fileStream);

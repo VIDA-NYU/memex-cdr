@@ -1,4 +1,4 @@
-package memex;
+package memex.cdr;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import org.xml.sax.SAXException;
 public class TikaExtractor {
 
     private static final Charset UTF8 = Charset.forName("UTF-8");
-    private static final Logger logger = LoggerFactory.getLogger(CrawlDataBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(CDRDocumentBuilder.class);
 
     private String plainText;
     private Map<String, String> metadata;
