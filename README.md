@@ -57,4 +57,5 @@ Sample output in JSON format:
     "Content-Type": "text/html; charset=ISO-8859-1"
   },
   "extracted_text": "Original text"
-}```
+}
+```
